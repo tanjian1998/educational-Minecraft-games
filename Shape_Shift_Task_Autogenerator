@@ -1,0 +1,179 @@
+
+from mcpi.minecraft import Minecraft
+from mcpi import block
+
+mc = Minecraft.create()
+pos = mc.player.getTilePos()
+
+
+
+# Create a vertical square
+mc.setBlocks(pos.x+7, pos.y, pos.z+1, pos.x+8, pos.y+4, pos.z+4, block.WOOL.id, 14)
+
+# Create a circle
+center_x = pos.x + 12
+center_y = pos.y + 2
+center_z = pos.z + 2
+radius = 2
+for x in range(center_x - radius, center_x + radius):
+    for z in range(center_z - radius, center_z + radius):
+        if (center_x - x)**2 + (center_z - z)**2 < radius**2:
+            mc.setBlock(x, center_y, z, block.GLASS.id)
+
+
+# get player's current position
+pos = mc.player.getTilePos()
+
+# generate a random number for the triangle's base
+base = random.randint(2, 5)
+
+# calculate the height of the triangle
+height = (base ** 2 - (base/2) ** 2) ** 0.5
+
+# loop through the base of the triangle and place blocks to create the shape
+for i in range(base):
+    mc.setBlock(pos.x + i, pos.y, pos.z, block.STONE.id)
+    mc.setBlock(pos.x + i, pos.y + int(height), pos.z, block.STONE.id)
+    mc.setBlock(pos.x + int(base/2), pos.y + i, pos.z, block.STONE.id)
+
+# Create an equilateral triangle
+mc.setBlocks(pos.x+1, pos.y, pos.z+1, pos.x+5, pos.y, pos.z+5, block.STONE.id)
+mc.setBlocks(pos.x+2, pos.y+1, pos.z+2, pos.x+4, pos.y+1, pos.z+4, block.AIR.id)
+
+# get player's current position
+x, y, z = mc.player.getTilePos()
+
+# generate random radius for the ellipse
+radius1 = random.randint(1, 10)
+radius2 = random.randint(1, 10)
+
+# loop through the y-coordinates
+for i in range(radius1):
+    # calculate the x and z-coordinates for each y-coordinate
+    x_coordinate = int(x + radius2 * math.cos(math.pi * i / radius1))
+    z_coordinate = int(z + radius1 * math.sin(math.pi * i / radius1))
+    mc.setBlock(x_coordinate, y, z_coordinate, STONE)
+
+# Set the block type
+block_type = block.STONE
+
+# Generate two random sides for the parallelogram
+side1 = random.randint(1, 10)
+side2 = random.randint(1, 10)
+
+# Build the parallelogram
+for i in range(side1):
+    for j in range(side2):
+        mc.setBlock(pos.x + i, pos.y, pos.z + j, block_type)
+
+# Function to generate a vertical ellipse with random 2 radius
+def generate_ellipse(x, y, z):
+    radius1 = random.randint(1, 10)
+    radius2 = random.randint(1, 10)
+    for i in range(x-radius1, x+radius1):
+        for j in range(y, y+radius2):
+            distance = ((i-x)**2)/(radius1**2) + ((j-y)**2)/(radius2**2)
+            if distance <= 1:
+                mc.setBlock(i, j, z, block.STONE.id)
+
+# Function to generate a vertical parallelogram with random 2 side
+def generate_parallelogram(x, y, z):
+    side1 = random.randint(1, 10)
+    side2 = random.randint(1, 10)
+    height = random.randint(1, 10)
+    for i in range(x, x+side1):
+        for j in range(y, y+height):
+            mc.setBlock(i, j, z, block.STONE.id)
+    for i in range(x+side1, x+side1+side2):
+        for j in range(y, y+height):
+            mc.setBlock(i, j, z, block.STONE.id)
+
+# Function to generate a vertical right triangle with random 2 side
+def generate_right_triangle(x, y, z):
+    base = random.randint(1, 10)
+    height = random.randint(1, 10)
+    for i in range(x, x+base):
+        for j in range(y, y+height):
+            if i <= j*(base/height):
+                mc.setBlock(i, j, z, block.STONE.id)
+
+# Function to use the same number of squares to stack different shapes
+def stack_shapes(x, y, z):
+    number_of_squares = random.randint(1, 10)
+    shape_count = 0
+    for i in range(number_of_squares):
+        shape = random.randint(1, 3)
+        if shape == 1:
+            generate_ellipse(x, y+shape_count, z)
+        elif shape == 2:
+            generate_parallelogram(x, y+shape_count, z)
+        elif shape == 3:
+            generate_right_triangle(x, y+shape_count, z)
+        shape_count += shape
+    return shape_count
+
+# Get player's current position
+player_pos = mc.player.getTilePos()
+
+# Call the stack_shapes function
+shape_count = stack_shapes(player_pos.x, player_pos.y, player_pos.z)
+
+# Print the number of stacking operations
+print("Number of stacking operations")
+
+
+
+# Stack a 3D maze In Minecraft, you can specify the length of the only passable route
+# Define the length of the passable route
+route_length = 10
+
+# Set the starting point for the maze
+start_x, start_y, start_z = mc.player.getTilePos()
+
+# Initialize a list to store the coordinates of the blocks in the maze
+maze_blocks = []
+
+# Create the maze using a loop
+for i in range(route_length):
+    # Generate a random direction for the route
+    direction = random.choice(["north", "south", "east", "west"])
+
+    # Create a branch in the route with a random chance
+    if random.randint(0, 100) < 20:
+        direction = random.choice(["up", "down"])
+
+    # Move the route in the chosen direction
+    if direction == "north":
+        current_x = start_x
+        current_y = start_y + i
+        current_z = start_z - 1
+    elif direction == "south":
+        current_x = start_x
+        current_y = start_y + i
+        current_z = start_z + 1
+    elif direction == "east":
+        current_x = start_x + 1
+        current_y = start_y + i
+        current_z = start_z
+    elif direction == "west":
+        current_x = start_x - 1
+        current_y = start_y + i
+        current_z = start_z
+    elif direction == "up":
+        current_x = start_x
+        current_y = start_y + i
+        current_z = start_z
+    elif direction == "down":
+        current_x = start_x
+        current_y = start_y + i
+        current_z = start_z
+
+    # Add the coordinates of the block to the list
+    maze_blocks.append((current_x, current_y, current_z))
+
+# Build the maze using the blocks in the list
+for x, y, z in maze_blocks:
+    mc.setBlock(x, y, z, block.STONE.id)
+
+# Print the number of blocks used to build the maze
+print(f"Number of blocks used: {len(maze_blocks)}")
